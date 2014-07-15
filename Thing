@@ -1,0 +1,80 @@
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+public class Thing {
+	private int x;
+	private int y;
+	private boolean solid;
+	private BufferedImage icon;
+	private boolean revealed;
+
+	public Thing() {
+		this(0, 0, false, true, "placeHolder.png");
+	}
+
+	public Thing(int x, int y, boolean solid, boolean revealed,
+			String targetImage) {
+		this.x = x;
+		this.y = y;
+		this.solid = solid;
+		this.revealed = revealed;
+		try {
+			icon = ImageIO.read(new File(targetImage));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void draw(Graphics g) {
+		if (revealed)
+			g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public boolean isSolid() {
+		return solid;
+	}
+
+	public void setSolid(boolean solid) {
+		this.solid = solid;
+	}
+
+	public BufferedImage getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String targetImage) {
+		try {
+			icon = ImageIO.read(new File(targetImage));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isRevealed() {
+		return revealed;
+	}
+
+	public void setRevealed(boolean revealed) {
+		this.revealed = revealed;
+	}
+
+}
