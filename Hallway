@@ -1,0 +1,33 @@
+import java.util.Random;
+
+public class Hallway {
+	int startX;
+	int startY;
+	int endX;
+	int endY;
+
+	public Hallway(Rect r, Rect e) {
+		Random rand = new Random();
+		if (rand.nextInt(1) == 1) {
+			if (r.midX < e.midX) {
+				startX = r.midX + r.length / 2;
+				endX = e.midX - e.length / 2;
+			} else {
+				startX = r.midX - r.length / 2;
+				endX = e.midX + e.length / 2;
+			}
+			startY = r.midY;
+			endY = e.midY;
+		} else {
+			if (r.midY < e.midY) {
+				startY = r.midY + r.height / 2;
+				endY = e.midY - e.height / 2;
+			} else {
+				startY = r.midY - r.height / 2;
+				endY = e.midY + e.height / 2;
+			}
+			startX = r.midX;
+			endX = e.midX;
+		}
+	}
+}
