@@ -4,7 +4,7 @@ dungeon
 2D Dungeon Crawler
 
 ToDo List:
-//////////
+=========
 -Stairs/Level infrastructure
 -Inventory display
 -Items, drops, currency
