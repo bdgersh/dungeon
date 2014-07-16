@@ -5,7 +5,7 @@ dungeon
 
 ToDo List:
 =========
-=Stairs/Level infrastructure
+-Stairs/Level infrastructure
 -Inventory display
 -Items, drops, currency
 -Enemies/combat
