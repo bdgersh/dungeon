@@ -1,0 +1,346 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+
+//Made by Christian Vaughan
+
+public class Window extends JFrame {
+	private int width = 1260;//960
+	private int height = 480;
+	private boolean up = false;
+	private boolean down = false;
+	private boolean right = false;
+	private boolean left = false;
+	private boolean wait = false;
+	private boolean enter = false;
+	private BufferedImage bi = new BufferedImage(width, height,
+			BufferedImage.TYPE_INT_RGB);
+	private BufferedImage background;
+	private Thing player;
+	private Thing[][] map = new Thing[60][30];
+	private Thing checkMove = new Thing();
+
+	public static void main(String[] args) { // control+shift+f for format
+		// TODO Auto-generated method stub
+		new Window();
+	}
+
+	public Window() {
+		this.setSize(width + 18, height + 38);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		try {
+			background = ImageIO.read(new File("background.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				int xMousePos = arg0.getX();
+				int yMousePos = arg0.getY();
+				
+				System.out.println((xMousePos)/16);
+				System.out.println((yMousePos - 32)/16);
+				
+				System.out.println(player.getX());
+				System.out.println(player.getY());
+				System.out.println("");
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			} 
+			                   
+		});
+		this.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if (e.getKeyCode() == KeyEvent.VK_W) {
+					up = true;
+					down = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+				} else if (e.getKeyCode() == KeyEvent.VK_S) {
+					down = true;
+					up = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+				} else if (e.getKeyCode() == KeyEvent.VK_D) {
+					right = true;
+					left = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+				} else if (e.getKeyCode() == KeyEvent.VK_A) {
+					left = true;
+					right = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+				} else if (e.getKeyCode() == KeyEvent.VK_E) {
+					enter = true;
+					updatePhysics();
+					repaint();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+				if (e.getKeyCode() == KeyEvent.VK_W) {
+					up = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_S) {
+					down = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_D) {
+					right = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_A) {
+					left = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_E) {
+					enter = false;
+					wait = false;
+				}
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+		});
+		this.setVisible(true);
+		// testing area:
+		int[][] maptest = new int[60][30];
+		TerrainGen ter = new TerrainGen(50);
+		maptest = ter.map;
+		for (int z = 0; z < 60; z++) {
+			for (int x = 0; x < 30; x++) {
+				if (maptest[z][x] == 0) {
+					map[z][x] = new Thing(z, x, true, false, "wall"
+							+ ((int) (Math.random() * (4)) + 1) + ".png");
+				} else {
+					map[z][x] = new Thing(z, x, false, false, "tile.png");
+				}
+			}
+
+		}
+		// boolean lightItUp = false;
+		// for(int z = 0; z<= 59 ; z++){ //testing, reveals all
+		// for(int x = 0; x<=29; x++){
+		//
+		//
+		// if(map[z][x]!=null){
+		// lightItUp = false;
+		// for(int i = z-1; i<=z+1;i ++){
+		// for(int j = x -1; j<=x+1;j++){
+		// if(j>=0&&i>=0&&i<60&&j<30){
+		//
+		// if(map[i][j].isSolid()==false){
+		// lightItUp = true;
+		// }
+		// }
+		// }
+		// }
+		// if(lightItUp == true){
+		// map[z][x].setRevealed(true);
+		// }
+		// }
+		//
+		// }
+		// }
+		outerloop: for (int z = 0; z < 60; z++) {
+			for (int x = 0; x < 30; x++) {
+				if (maptest[z][x] != 0) {
+					player = new Thing(z, x, false, true, "Cioffienemyface.png");
+					break outerloop;
+				}
+			}
+		}
+
+		updatePhysics();
+		repaint();
+		// initialize area:
+
+	}
+
+	public void paint(Graphics g) {
+		Graphics gi = bi.createGraphics();
+		gi.drawImage(background, 0, 0, 1260, 480, null);
+		for (int x = 0; x < 60; x++) {
+			for (int y = 0; y < 30; y++) {
+				if (map[x][y] != null)
+					map[x][y].draw(gi);
+			}
+		}
+		if (player != null)
+			player.draw(gi);
+		g.drawImage(bi, 8, 29, width, height, null);
+	}
+
+	public void updatePhysics() {
+		if (!wait) {
+			if (up) {
+				checkMove = map[player.getX()][player.getY() - 1];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setY(player.getY() - 1);
+						wait = true;
+						up = false;
+					}
+				} else {
+					player.setY(player.getY() - 1);
+					wait = true;
+					up = false;
+				}
+			}
+			if (down) {
+				checkMove = map[player.getX()][player.getY() + 1];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setY(player.getY() + 1);
+						wait = true;
+						down = false;
+					}
+				} else {
+					player.setY(player.getY() + 1);
+					wait = true;
+					down = false;
+				}
+
+			}
+			if (left) {
+				checkMove = map[player.getX() - 1][player.getY()];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setX(player.getX() - 1);
+						wait = true;
+						left = false;
+					}
+				} else {
+					player.setX(player.getX() - 1);
+					wait = true;
+					left = false;
+				}
+
+			}
+			if (right) {
+				checkMove = map[player.getX() + 1][player.getY()];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setX(player.getX() + 1);
+						wait = true;
+						right = false;
+					}
+				} else {
+					player.setX(player.getX() + 1);
+					wait = true;
+					right = false;
+				}
+
+			}
+			if (enter) {
+				wait = true;
+				enter = false;
+			}
+		}
+		if (player.getX() > 59) {
+			player.setX(59);
+		}
+		if (player.getX() < 0) {
+			player.setX(0);
+		}
+		if (player.getY() > 29) {
+			player.setY(29);
+		}
+		if (player.getY() < 0) {
+			player.setY(0);
+		}
+		
+		for (int i = 0; i < 60; i++) {
+			for (int j = 0; j < 30; j++) {
+				map[i][j].setRevealed(false);
+			}
+		}
+		for (int i = 0; i < 10; i++)
+			for (int z = player.getX() - 5; z <= player.getX() + 5; z++) { // real
+				for (int x = player.getY() - 5; x <= player.getY() + 5; x++) {
+					if (z >= 0 && x >= 0 && z < 60 && x < 30) {
+						if (z == player.getX() && x == player.getY()) {
+							map[z][x].setRevealed(true);
+							map[z][x].setDepX(z);
+							map[z][x].setDepY(x);
+
+						} else {
+							map[z][x].setDep(player.getX(), player.getY());
+							if (!map[map[z][x].getDepX()][map[z][x].getDepY()]
+									.isSolid()
+									&& map[map[z][x].getDepX()][map[z][x]
+											.getDepY()].isRevealed()) {
+								map[z][x].setRevealed(true);
+							}
+						}
+					}
+				}
+			}
+		boolean lightItUp = false;
+		for (int z = player.getX() - 5; z <= player.getX() + 5; z++) { // real
+			for (int x = player.getY() - 5; x <= player.getY() + 5; x++) {
+				if (z >= 0 && x >= 0 && z < 60 && x < 30) {
+					
+					lightItUp = false;
+					for (int i = z - 1; i <= z + 1; i++) {
+						for (int j = x - 1; j <= x + 1; j++) {
+							if (j >= 0 && i >= 0 && i < 60 && j < 30) {
+								if (!map[i][j].isSolid()
+										&& map[i][j].isRevealed())
+									lightItUp = true;
+							}
+						}
+					}
+					if (lightItUp && map[z][x].getType().equals("wall")) {
+						map[z][x].setRevealed(true);
+					}
+					
+				}
+			}
+
+		}
+
+	}
+
+}
