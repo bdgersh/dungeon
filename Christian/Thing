@@ -1,0 +1,148 @@
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+public class Thing {
+	private int x;
+	private int y;
+	private boolean solid;
+	private boolean wasRevealed = false;
+	private BufferedImage icon;
+	private BufferedImage fog;
+	private boolean revealed;
+	private int depX = 0;
+	private int depY = 0;
+	private String type;
+
+	public Thing() {
+		this(0, 0, false, true, "placeHolder.png");
+	}
+
+	public Thing(int x, int y, boolean solid, boolean revealed,
+			String targetImage) {
+		this.x = x;
+		this.y = y;
+		this.solid = solid;
+		this.revealed = revealed;
+		if(targetImage.contains("wall")){
+			this.type = "wall";
+		}
+		if(targetImage.contains("tile")){
+			this.type = "tile";
+		}
+		
+		try {
+			icon = ImageIO.read(new File(targetImage));
+			fog = ImageIO.read(new File("fog.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void draw(Graphics g) {
+		if (revealed){
+			g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+		}else if(wasRevealed){
+			g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+			g.drawImage(fog, x * 16, y * 16, 16, 16, null);
+		}
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public boolean isSolid() {
+		return solid;
+	}
+
+	public void setSolid(boolean solid) {
+		this.solid = solid;
+	}
+
+	public BufferedImage getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String targetImage) {
+		try {
+			icon = ImageIO.read(new File(targetImage));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isRevealed() {
+		return revealed;
+	}
+
+	public void setRevealed(boolean revealed) {
+		if(revealed)
+			wasRevealed = true;
+		this.revealed = revealed;
+	}
+
+	public void setDep(int pX, int pY) {
+		int diffX = pX - x;
+		int diffY = pY - y;
+		if (diffX == 0) {
+			depX = x;
+			depY = y + (diffY / Math.abs(diffY));
+		} else if (diffY == 0) {
+			depX = x + (diffX / Math.abs(diffX));
+			depY = y;
+
+		} else {
+			if (Math.abs(Math.abs(diffX) - Math.abs(diffY)) <= 1) {
+				depX = x + (diffX / Math.abs(diffX));
+				depY = y + (diffY / Math.abs(diffY));
+			} else {
+				if (Math.abs(diffX) > Math.abs(diffY)) {
+
+					depX = x + (diffX / Math.abs(diffX));
+					depY = y;
+				} else {
+
+					depX = x;
+					depY = y + (diffY / Math.abs(diffY));
+				}
+			}
+		}
+		System.out.println("x = " + x + "; depX = " + depX + "; playerx = "
+				+ pX + ";");
+		System.out.println("y = " + y + "; depY = " + depY + "; playery = "
+				+ pY + ";");
+	}
+
+	public int getDepX() {
+		return depX;
+	}
+
+	public int getDepY() {
+		return depY;
+	}
+	public void setDepX(int depX){
+		this.depX = depX;
+	}
+	public void setDepY(int depY){
+		this.depY = depY;
+	}
+	public String getType(){
+		return type;
+	}
+
+}
