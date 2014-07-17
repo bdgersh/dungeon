@@ -7,7 +7,7 @@ ToDo Lizt==
 -Ztairz/Level infraztructure
 -Inventory dizplay
 -Itemz, dropz, currency
-    -Enemies dropping itemz/ randomly generated cheztz  
+    -Enemiez dropping itemz/ randomly generated cheztz  
     -Rarity
             -Grey
             -Green
