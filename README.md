@@ -3,19 +3,25 @@ dungeon
 
 2D Dungeon Crawler
 
-ToDo List:
-=========
--Stairs/Level infrastructure
--Inventory display
--Items, drops, currency
--Enemies/combat
--Enemies dropping items/ randomly generated chests
--Leveling system
-    -stats
+ToDo Lizt==
+-Ztairz/Level infraztructure
+-Inventory dizplay
+-Itemz, dropz, currency
+    -Enemies dropping itemz/ randomly generated cheztz  
+    -Rarity
+            -Grey
+            -Green
+            -Blue
+            -Purple
+            -Orange
+-Enemiez/combat
+
+-Leveling zyztem
+    -ztatz
       -health
       -mana
       -later others
-    -skill tree?
+    -zkill tree?
 -Ranged Combat
 -Magic
--test
+-Zoundz
