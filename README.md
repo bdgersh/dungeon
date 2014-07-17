@@ -25,3 +25,6 @@ ToDo Lizt==
 -Ranged Combat  
 -Magic  
 -Zoundz 
+
+pics:
+http://imgur.com/a/rgrYF#3
