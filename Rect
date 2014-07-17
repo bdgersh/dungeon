@@ -12,8 +12,8 @@ public class Rect {
 
 	public Rect() {
 
-		x = (int) (Math.random() * 44) + 1;
-		y = (int) (Math.random() * 14) + 1;
+		x = (int) (Math.random() * 43) + 1;
+		y = (int) (Math.random() * 13) + 1;
 
 		height = (int) (Math.random() * 15);
 		length = (int) (Math.random() * 15);
@@ -40,8 +40,8 @@ public class Rect {
 	}
 
 	public void random() {
-		x = (int) (Math.random() * 44) + 1;
-		y = (int) (Math.random() * 14) + 1;
+		x = (int) (Math.random() * 43) + 1;
+		y = (int) (Math.random() * 13) + 1;
 
 		height = (int) (Math.random() * 15);
 		length = (int) (Math.random() * 15);
@@ -49,4 +49,5 @@ public class Rect {
 		midX = (int) (x + length / 2);
 		midY = (int) (y + height / 2);
 	}
+	
 }
