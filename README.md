@@ -16,12 +16,12 @@ ToDo Lizt==
             -Orange    
 -Enemiez/combat
 
--Leveling zyztem
-    -ztatz
-      -health
-      -mana
-      -later others
-    -zkill tree?
--Ranged Combat
--Magic
--Zoundz
+-Leveling zyztem    
+    -ztatz  
+      -health   
+      -mana 
+      -later others 
+    -zkill tree?    
+-Ranged Combat  
+-Magic  
+-Zoundz 
