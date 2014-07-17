@@ -1,0 +1,196 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
+
+public class TerrainGen {
+	Random rand = new Random();
+	boolean intersect;
+	static int currentlevel = 12;
+	int[][] map = new int[60][30];
+	ArrayList<Rect> rooms = new ArrayList();
+	ArrayList<Hallway> halls = new ArrayList();
+	ArrayList<Stair> stairs = new ArrayList();
+	int[][][] mapsies = new int[20][60][30];
+	
+	
+	public TerrainGen(int num) {
+		rooms.add(new Rect());
+		boolean possible = true;
+		boolean restart;
+
+		for (int q = 1; q < num; q++) {
+
+			restart = true;
+			Rect hold = null;
+			while (restart) {
+				hold = new Rect();
+				hold.random();
+				restart = false;
+				for (Rect r : rooms) {
+					if (r.intersect(hold)) {
+						restart = true;
+
+					}
+
+				}
+			}
+			rooms.add(hold);
+		}
+
+		int lowX = 0;
+		int lowY = 0;
+		for (Rect r : rooms) {
+			if (r.x < lowX)
+				lowX = r.x;
+			if (r.y < lowY)
+				lowY = r.y;
+		}
+		for (Rect r : rooms) {
+			r.x = r.x + (Math.abs(lowX));
+			r.y = r.y + (Math.abs(lowY));
+		}
+//		System.out.println(rooms.get(0).x);
+//
+//		System.out.println(rooms.get(0).y);
+		for (Rect r : rooms) {
+			for (int q = r.x; q < r.x + r.length - 1; q++) {
+				for (int w = r.y; w < r.y + r.height - 1; w++) {
+					map[q][w] = 1;
+				}
+			}
+
+			for (int q = r.x + 1; q < r.x + r.length - 1; q++) {
+				for (int w = r.y + 1; w < r.y + r.height - 1; w++) {
+					map[q][w] = 0;
+				}
+			}
+		}
+
+		Iterator<Rect> it = rooms.iterator();
+		
+		while (it.hasNext()) {
+			Rect r = it.next();
+			if (r.area < 15) {
+				it.remove();
+			}
+		}
+		//System.out.println(rooms.size());
+
+		for (Rect r : rooms) {
+			for (int q = r.x; q < r.x + r.length; q++) {
+				for (int w = r.y; w < r.y + r.height; w++) {
+					map[q][w] = 1;
+				}
+			}
+
+		}
+		int temp = 0;
+		for (Rect r : rooms) {
+				if (Math.random() < 0.8) {
+
+				Hallway n = new Hallway(r, closest(r));
+				halls.add(n);
+			}
+			//spawn 2 stairs per level
+			if (temp < 2) {
+				Stair s = new Stair(r);
+				stairs.add(s);
+			}
+			temp++;
+		
+			// if (rand.nextInt(2) == 1) {
+			// Stair s = new Stair(r);
+			// stairs.add(s);
+			// }
+		}
+		for (int i = 0; i < 3; i++) {
+			Hallway n = new Hallway(rooms.get(i), furthest(rooms.get(i)));
+			halls.add(n);
+		}
+		for (Stair s : stairs) {
+			map[s.x][s.y] = 3;
+		}
+		for (Hallway h : halls) {
+
+			if (h.startX < h.endX)
+				for (int x = h.startX; x < h.endX; x++) {
+					map[x][h.startY] = 1;
+				}
+			if (h.startX > h.endX)
+				for (int x = h.startX; x > h.endX; x--) {
+					map[x][h.startY] = 1;
+				}
+			if (h.startY < h.endY)
+				for (int y = h.startY; y < h.endY; y++) {
+					map[h.endX][y] = 1;
+				}
+			if (h.startY > h.endY)
+				for (int y = h.startY; y > h.endY; y--) {
+					map[h.endX][y] = 1;
+				}
+			map[h.startX][h.startY] = 2;
+			map[h.endX][h.endY] = 2;
+
+		}
+
+	}
+ 
+	
+	public static void changeLevel(int width, int height, boolean dir) {
+		if(dir){
+			currentlevel++;
+		}else{
+			currentlevel--;
+		}
+		
+	}
+	
+	public static int getCurrentLevel(){
+		return currentlevel;
+	}
+
+	public Rect closest(Rect r) {
+		Rect close = rooms.get(0);
+		double dclose = 1000;
+		double d = 0;
+
+		for (Rect q : rooms) {
+			if (q.equals(r)) {
+
+			} else {
+
+				d = Math.abs((r.midX - q.midX) + (r.midY - q.midY));
+				if (d < dclose) {
+					close = q;
+					dclose = d;
+				}
+			}
+
+		}
+		return close;
+
+	}
+
+	public Rect furthest(Rect r) {
+		Rect close = rooms.get(0);
+		double dclose = 0;
+		double d = 0;
+
+		for (Rect q : rooms) {
+			if (q.equals(r)) {
+
+			} else {
+
+				d = Math.abs((r.midX - q.midX) + (r.midY - q.midY));
+				if (d > dclose) {
+					close = q;
+					dclose = d;
+				}
+			}
+
+		}
+		return close;
+
+	}
+
+}
