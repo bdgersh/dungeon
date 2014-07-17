@@ -423,3 +423,339 @@ public class Window extends JFrame {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+
+//Made by Christian Vaughan
+
+public class Window extends JFrame {
+	private int width = 960;
+	private int height = 480;
+	private ArrayList<Boolean> stairs = new ArrayList();
+	private ArrayList<Integer> stairLocationZ = new ArrayList();
+	private ArrayList<Integer> stairLocationX = new ArrayList();
+	private int stairDir = 0;
+	private boolean up = false;
+	private boolean down = false;
+	private boolean right = false;
+	private boolean left = false;
+	private boolean wait = false;
+	private boolean enter = false;
+	private BufferedImage bi = new BufferedImage(width, height,
+			BufferedImage.TYPE_INT_RGB);
+	private BufferedImage background;
+	private Thing player;
+	private Thing[][] map = new Thing[60][30];
+	private Thing checkMove = new Thing();
+
+	public static void main(String[] args) { // control+shift+f for format
+		new Window();
+	}
+
+	public Window() {
+
+		this.setSize(width + 18, height + 38);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		try {
+			background = ImageIO.read(new File("BackgroudBlack.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if (e.getKeyCode() == KeyEvent.VK_W) {
+
+					up = true;
+					down = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+					System.out.println(player.getX() + " : " + player.getY());
+				} else if (e.getKeyCode() == KeyEvent.VK_S) {
+
+					down = true;
+					up = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+					System.out.println(player.getX() + " : " + player.getY());
+				} else if (e.getKeyCode() == KeyEvent.VK_D) {
+
+					right = true;
+					left = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+					System.out.println(player.getX() + " : " + player.getY());
+				} else if (e.getKeyCode() == KeyEvent.VK_A) {
+
+					left = true;
+					right = false;
+					wait = false;
+					updatePhysics();
+					repaint();
+					System.out.println(player.getX() + " : " + player.getY());
+				} else if (e.getKeyCode() == KeyEvent.VK_E) {
+					enter = true;
+					if (stairLocationZ.contains(player.getX())) {
+						if (stairLocationX.contains(player.getY())) {
+							if (stairs.get(stairLocationZ.indexOf(player.getX()))) {
+								TerrainGen.changeLevel(60, 30, true);
+								System.out.println(TerrainGen.getCurrentLevel());
+							} else if (!stairs.get(stairLocationZ
+									.indexOf(player.getX()))) {
+								TerrainGen.changeLevel(60, 30, false);
+								System.out.println(TerrainGen.getCurrentLevel());
+							}
+						}
+					}
+					updatePhysics();
+					repaint();
+				}
+			}
+
+			private void goDown() {
+				// TODO Auto-generated method stub
+
+			}
+
+			private void goUp() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+				if (e.getKeyCode() == KeyEvent.VK_W) {
+					up = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_S) {
+					down = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_D) {
+					right = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_A) {
+					left = false;
+					wait = false;
+				} else if (e.getKeyCode() == KeyEvent.VK_E) {
+					enter = false;
+					wait = false;
+				}
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+		});
+		this.setVisible(true);
+		// testing area:
+		int[][] maptest = new int[60][30];
+		TerrainGen ter = new TerrainGen(50);
+		maptest = ter.map;
+		int temp = 0;
+		for (int z = 0; z < 60; z++) {
+			for (int x = 0; x < 30; x++) {
+				if (maptest[z][x] == 0) {
+					map[z][x] = new Thing(z, x, true, false, "wall"
+							+ ((int) (Math.random() * (4)) + 1) + ".png");
+					// }else if(maptest[z][x] == 2){
+					// map[z][x] = new Thing(z, x, false, false, "placeHolder" +
+					// ".png");
+				} else if (maptest[z][x] == 3) {
+					stairLocationZ.add(z);
+					stairLocationX.add(x);
+					Random random = new Random();
+					if (stairDir < 1) {
+						map[z][x] = new Thing(z, x, false, false,
+								"zStairsUp.png");
+						stairs.add(true);
+						stairDir += 1;
+					} else {
+						map[z][x] = new Thing(z, x, false, false,
+								"zStairsDown.png");
+						stairs.add(false);
+						
+					}
+
+					// System.out.println(z + " : " + x);
+					// System.out.println(stairLocationZ + " : " +
+					// stairLocationX);
+
+				} else {
+					map[z][x] = new Thing(z, x, false, false, "tile.png");
+				}
+			}
+			System.out.println();
+		}
+		boolean lightItUp = false;
+		for (int z = 0; z <= 59; z++) { // testing, reveals all
+			for (int x = 0; x <= 29; x++) {
+
+				if (map[z][x] != null) {
+					lightItUp = false;
+					for (int i = z - 1; i <= z + 1; i++) {
+						for (int j = x - 1; j <= x + 1; j++) {
+							if (j >= 0 && i >= 0 && i < 60 && j < 30) {
+
+								if (map[i][j].isSolid() == false) {
+									lightItUp = true;
+								}
+							}
+						}
+					}
+					if (lightItUp == true) {
+						map[z][x].setRevealed(true);
+					}
+				}
+
+			}
+		}
+
+		outerloop: for (int z = 0; z < 60; z++) {
+			for (int x = 0; x < 30; x++) {
+				if (maptest[z][x] != 0) {
+					player = new Thing(z, x, false, true, "placeHolder.png");
+					break outerloop;
+				}
+			}
+		}
+		// initialize area:
+		for (int i = 0; i < stairLocationZ.size(); i++) {
+			System.out.print(stairLocationZ.get(i) + " : ");
+			System.out.println(stairLocationX.get(i));
+		}
+
+		updatePhysics();
+		repaint();
+
+	}
+
+	public void paint(Graphics g) {
+		Graphics gi = bi.createGraphics();
+		gi.drawImage(background, 0, 0, null);
+		for (int x = 0; x < 60; x++) {
+			for (int y = 0; y < 30; y++) {
+				if (map[x][y] != null)
+					map[x][y].draw(gi);
+			}
+		}
+		if (player != null)
+			player.draw(gi);
+		g.drawImage(bi, 8, 29, width, height, null);
+	}
+
+	public void updatePhysics() {
+		if (!wait) {
+			if (up) {
+				checkMove = map[player.getX()][player.getY() - 1];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setY(player.getY() - 1);
+						wait = true;
+						up = false;
+					}
+				} else {
+					player.setY(player.getY() - 1);
+					wait = true;
+					up = false;
+				}
+			}
+			if (down) {
+				checkMove = map[player.getX()][player.getY() + 1];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setY(player.getY() + 1);
+						wait = true;
+						down = false;
+					}
+				} else {
+					player.setY(player.getY() + 1);
+					wait = true;
+					down = false;
+				}
+
+			}
+			if (left) {
+				checkMove = map[player.getX() - 1][player.getY()];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setX(player.getX() - 1);
+						wait = true;
+						left = false;
+					}
+				} else {
+					player.setX(player.getX() - 1);
+					wait = true;
+					left = false;
+				}
+
+			}
+			if (right) {
+				checkMove = map[player.getX() + 1][player.getY()];
+				if (checkMove != null) {
+					if (checkMove.isSolid() == false) {
+						player.setX(player.getX() + 1);
+						wait = true;
+						right = false;
+					}
+				} else {
+					player.setX(player.getX() + 1);
+					wait = true;
+					right = false;
+				}
+
+			}
+			if (enter) {
+
+				wait = true;
+				enter = false;
+			}
+		}
+		if (player.getX() > 59) {
+			player.setX(59);
+		}
+		if (player.getX() < 0) {
+			player.setX(0);
+		}
+		if (player.getY() > 29) {
+			player.setY(29);
+		}
+		if (player.getY() < 0) {
+			player.setY(0);
+		}
+	
+	}
+
+
+}
+
