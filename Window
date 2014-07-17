@@ -9,59 +9,144 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+
 //Made by Christian Vaughan
 
 public class Window extends JFrame {
-	private int width = 960;
+	private int width = 1260;// Actual map goes to 960
 	private int height = 480;
+	// /////////////////////// key presses
 	private boolean up = false;
 	private boolean down = false;
 	private boolean right = false;
 	private boolean left = false;
 	private boolean wait = false;
 	private boolean enter = false;
+	// ///////////////////////
 	private BufferedImage bi = new BufferedImage(width, height,
-			BufferedImage.TYPE_INT_RGB);
+			BufferedImage.TYPE_INT_RGB); // buffered image for whole screen
 	private BufferedImage background;
-	private Thing player;
-	private Thing[][] map = new Thing[60][30];
-	private Thing checkMove = new Thing();
+	// ///////////////////////
+	private Thing player; /*
+						 * holds everything about the player. Make new class
+						 * when stuff gets complicated
+						 */
+	// ///////////////////////
+	private Thing[][] map = new Thing[60][30]; /*
+												 * holds map. replace with
+												 * ArrayList for multi level
+												 */
+	private Thing checkMove = new Thing(); /*
+											 * used for checking movement of
+											 * player
+											 */
 
 	public static void main(String[] args) { // control+shift+f for format
-		// TODO Auto-generated method stub
 		new Window();
 	}
 
 	public Window() {
-		this.setSize(width + 18, height + 38);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		try {
-			background = ImageIO.read(new File("Background1.png"));
+		this.setSize(width + 18, height + 38);// yay borders
+		this.setLocation(2, 6);// don't question me
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE); // no troll please
+		this.setResizable(false);
+
+		try { // import every pic needed in window here
+			background = ImageIO.read(new File("background.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		this.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) { // what happens when
+														// clicked
+				// figures out which tile of map you clicked on:
+				int xMousePos = arg0.getX();
+				int yMousePos = arg0.getY();
+
+				System.out.println((xMousePos) / 16);
+				System.out.println((yMousePos - 32) / 16);
+
+				System.out.println(player.getX());
+				System.out.println(player.getY());
+				System.out.println("");
+				// other things?:
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// has something to do with hovering?
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
 		this.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-
+				// what happens when a key is pressed
 				if (e.getKeyCode() == KeyEvent.VK_W) {
 					up = true;
 					down = false;
 					wait = false;
+					// done so it is turn based
+					updatePhysics();
+					repaint();
+					// is kinda weird, replace?
 				} else if (e.getKeyCode() == KeyEvent.VK_S) {
 					down = true;
 					up = false;
 					wait = false;
+					updatePhysics();
+					repaint();
 				} else if (e.getKeyCode() == KeyEvent.VK_D) {
 					right = true;
 					left = false;
 					wait = false;
+					updatePhysics();
+					repaint();
 				} else if (e.getKeyCode() == KeyEvent.VK_A) {
 					left = true;
 					right = false;
 					wait = false;
+					updatePhysics();
+					repaint();
 				} else if (e.getKeyCode() == KeyEvent.VK_E) {
 					enter = true;
+					updatePhysics();
+					repaint();
 				}
 			}
 
@@ -92,6 +177,39 @@ public class Window extends JFrame {
 		});
 		this.setVisible(true);
 		// testing area:
+		
+		
+		
+		
+
+		// code that reveals everything:
+
+		// boolean lightItUp = false;
+		// for (int z = 0; z <= 59; z++) {
+		// for (int x = 0; x <= 29; x++) {
+		//
+		// if (map[z][x] != null) {
+		// lightItUp = false;
+		// for (int i = z - 1; i <= z + 1; i++) {
+		// for (int j = x - 1; j <= x + 1; j++) {
+		// if (j >= 0 && i >= 0 && i < 60 && j < 30) {
+		//
+		// if (map[i][j].isSolid() == false) {
+		// lightItUp = true;
+		// }
+		// }
+		// }
+		// }
+		// if (lightItUp == true) {
+		// map[z][x].setRevealed(true);
+		// }
+		// }
+		//
+		// }
+		// }
+		
+		//interprets TerrainGen 
+		//could be moved to TerrainGen
 		int[][] maptest = new int[60][30];
 		TerrainGen ter = new TerrainGen(50);
 		maptest = ter.map;
@@ -100,85 +218,73 @@ public class Window extends JFrame {
 				if (maptest[z][x] == 0) {
 					map[z][x] = new Thing(z, x, true, false, "wall"
 							+ ((int) (Math.random() * (4)) + 1) + ".png");
-				//}else if(maptest[z][x] == 2){
-				//	map[z][x] = new Thing(z, x, false, false, "placeHolder" + ".png");
-				}else if(maptest[z][x] == 3){
-					map[z][x] = new Thing(z, x, false, false, "placeHolder" + ".png");
-				}else {
+				} else {
 					map[z][x] = new Thing(z, x, false, false, "tile.png");
 				}
 			}
-			System.out.println();
+
 		}
-		boolean lightItUp = false;
-		for (int z = 0; z <= 59; z++) { // testing, reveals all
-			for (int x = 0; x <= 29; x++) {
-
-				if (map[z][x] != null) {
-					lightItUp = false;
-					for (int i = z - 1; i <= z + 1; i++) {
-						for (int j = x - 1; j <= x + 1; j++) {
-							if (j >= 0 && i >= 0 && i < 60 && j < 30) {
-
-								if (map[i][j].isSolid() == false) {
-									lightItUp = true;
-								}
-							}
-						}
-					}
-					if (lightItUp == true) {
-						map[z][x].setRevealed(true);
-					}
-				}
-
-			}
-		}
-
+		
 		outerloop: for (int z = 0; z < 60; z++) {
 			for (int x = 0; x < 30; x++) {
 				if (maptest[z][x] != 0) {
-					player = new Thing(z, x, false, true, "placeHolder.png");
+					// finds first open spot on level and places player
+					player = new Thing(z, x, false, true, "Cioffienemyface.png");
 					break outerloop;
+
 				}
 			}
 		}
-		// initialize area:
 
-		while (true) { // replace with timers
-			updatePhysics();
-			repaint();
-		}
+		// initialize area for other things:
+
+		// starts game, otherwise button press would be required to start
+		updatePhysics();
+		repaint();
 
 	}
 
 	public void paint(Graphics g) {
 		Graphics gi = bi.createGraphics();
-		gi.drawImage(background, 0, 0, null);
+		//draw everything to gi so double buffered
+		
+		gi.drawImage(background, 0, 0, 1260, 480, null); // draws background
+		
 		for (int x = 0; x < 60; x++) {
 			for (int y = 0; y < 30; y++) {
+				// draws everything in map[][] if not null
 				if (map[x][y] != null)
 					map[x][y].draw(gi);
 			}
 		}
+		// to account for stupid error because comp is slow
 		if (player != null)
 			player.draw(gi);
-		g.drawImage(bi, 8, 29, width, height, null);
+
+		g.drawImage(bi, 8, 29, width, height, null); /*
+													 * draws buffered image to
+													 * screen
+													 */
 	}
 
 	public void updatePhysics() {
-		if (!wait) {
+
+		if (!wait) { /*
+					 * honestly I forget why this is here, lets just pretend it
+					 * does something useful ok?
+					 */
 			if (up) {
+				// tells it what it is moving to
 				checkMove = map[player.getX()][player.getY() - 1];
+				// checks for null so not out of bounds
 				if (checkMove != null) {
+					// yay collisions
 					if (checkMove.isSolid() == false) {
+						// moves
 						player.setY(player.getY() - 1);
-						wait = true;
+						wait = true; // totally does something
 						up = false;
 					}
-				} else {
-					player.setY(player.getY() - 1);
-					wait = true;
-					up = false;
 				}
 			}
 			if (down) {
@@ -189,10 +295,6 @@ public class Window extends JFrame {
 						wait = true;
 						down = false;
 					}
-				} else {
-					player.setY(player.getY() + 1);
-					wait = true;
-					down = false;
 				}
 
 			}
@@ -204,10 +306,6 @@ public class Window extends JFrame {
 						wait = true;
 						left = false;
 					}
-				} else {
-					player.setX(player.getX() - 1);
-					wait = true;
-					left = false;
 				}
 
 			}
@@ -219,19 +317,15 @@ public class Window extends JFrame {
 						wait = true;
 						right = false;
 					}
-				} else {
-					player.setX(player.getX() + 1);
-					wait = true;
-					right = false;
 				}
 
 			}
-			if (enter) {
-
+			if (enter) {// when you press e
 				wait = true;
 				enter = false;
 			}
 		}
+		// yay not walking off the edge
 		if (player.getX() > 59) {
 			player.setX(59);
 		}
@@ -245,39 +339,88 @@ public class Window extends JFrame {
 			player.setY(0);
 		}
 
-//		boolean lightItUp = false;
-//		for (int i = 0; i < 60; i++) {
-//			for (int j = 0; j < 30; j++) {
-//				if (Math.abs(player.getX() - i) + Math.abs(player.getY() - j) >= 7)
-//					map[i][j].setRevealed(false);
-//			}
-//		}
-//		for (int z = player.getX() - 5; z <= player.getX() + 5; z++) { // real
-//			for (int x = player.getY() - 5; x <= player.getY() + 5; x++) {
-//				if (z >= 0 && x >= 0 && z < 60 && x < 30) {
-//				
-//					if (Math.abs(player.getX() - z)
-//							+ Math.abs(player.getY() - x) < 7)
-//						if (map[z][x] != null) {
-//							lightItUp = false;
-//							for (int i = z - 1; i <= z + 1; i++) {
-//								for (int j = x - 1; j <= x + 1; j++) {
-//									if (j >= 0 && i >= 0 && i < 60 && j < 30) {
-//
-//										if (map[i][j].isSolid() == false) {
-//											lightItUp = true;
-//										}
-//									}
-//								}
-//							}
-//							if (lightItUp == true) {
-//								map[z][x].setRevealed(true);
-//							}
-//						}
-//				}
-//			}
-//		}
+		// real vision code
+		for (int i = 0; i < 60; i++) {
+			for (int j = 0; j < 30; j++) {
+				// covers everything
+				map[i][j].setRevealed(false);
+			}
+		}
+
+		// reveals things near that you can see
+
+		// goes through extra times to not leave any behind
+		for (int i = 0; i < 10; i++)
+			// 5 is vision range
+			for (int z = player.getX() - 5; z <= player.getX() + 5; z++) {
+				for (int x = player.getY() - 5; x <= player.getY() + 5; x++) {
+					/*
+					 * checks for out of bounds ... could also just check for
+					 * null ... but, meh? does the same thing.
+					 */
+					if (z >= 0 && x >= 0 && z < 60 && x < 30) {
+
+						if (z == player.getX() && x == player.getY()) {
+							// always reveals tile below player
+							map[z][x].setRevealed(true);
+							map[z][x].setDepX(z);
+							map[z][x].setDepY(x);
+
+						} else {
+							// finds tile that current one is dependent on
+							map[z][x].setDep(player.getX(), player.getY());
+							/*
+							 * if said dependent tile is not a wall and is
+							 * revealed, reveal it.
+							 */
+							if (!map[map[z][x].getDepX()][map[z][x].getDepY()]
+									.getType().equals("wall")
+									&& map[map[z][x].getDepX()][map[z][x]
+											.getDepY()].isRevealed()) {
+								// YAY FORMATTING IS DUMB ^^^
+								map[z][x].setRevealed(true);
+							}
+						}
+					}
+				}
+			}
+
+		// deals with walls you wouldn't normally see
+		boolean lightItUp = false;
+		// same as above
+		for (int z = player.getX() - 5; z <= player.getX() + 5; z++) {
+			for (int x = player.getY() - 5; x <= player.getY() + 5; x++) {
+				if (z >= 0 && x >= 0 && z < 60 && x < 30) {
+					// aw snap now it is different!
+					lightItUp = false;
+					/*
+					 * if selected pos of grid is a wall and is adj to a tile
+					 * that is revealed, reveal it also. Yay hallways don't look
+					 * as dumb!
+					 */
+					if (map[z][x].getType().equals("wall")) {
+						for (int i = z - 1; i <= z + 1; i++) {
+							for (int j = x - 1; j <= x + 1; j++) {
+								// checks for bounds
+								if (j >= 0 && i >= 0 && i < 60 && j < 30) {
+
+									if (map[i][j].getType().equals("tile")
+											&& map[i][j].isRevealed())
+										lightItUp = true;
+								}
+							}
+						}
+						if (lightItUp) {
+							map[z][x].setRevealed(true);
+						}
+					}
+				}
+			}
+
+		}
+		// end of real vision code
 
 	}
 
 }
+
