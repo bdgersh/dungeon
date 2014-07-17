@@ -423,35 +423,3 @@ public class Window extends JFrame {
 	}
 
 }
--// boolean lightItUp = false;
--// for (int i = 0; i < 60; i++) {
--// for (int j = 0; j < 30; j++) {
--// if (Math.abs(player.getX() - i) + Math.abs(player.getY() - j) >= 7)
--// map[i][j].setRevealed(false);
--// }
--// }
--// for (int z = player.getX() - 5; z <= player.getX() + 5; z++) { // real
--// for (int x = player.getY() - 5; x <= player.getY() + 5; x++) {
--// if (z >= 0 && x >= 0 && z < 60 && x < 30) {
--//
--// if (Math.abs(player.getX() - z)
--// + Math.abs(player.getY() - x) < 7)
--// if (map[z][x] != null) {
--// lightItUp = false;
--// for (int i = z - 1; i <= z + 1; i++) {
--// for (int j = x - 1; j <= x + 1; j++) {
--// if (j >= 0 && i >= 0 && i < 60 && j < 30) {
--//
--// if (map[i][j].isSolid() == false) {
--// lightItUp = true;
--// }
--// }
--// }
--// }
--// if (lightItUp == true) {
--// map[z][x].setRevealed(true);
--// }
--// }
--// }
--// }
--// }
