@@ -1,0 +1,14 @@
+} else if (e.getKeyCode() == KeyEvent.VK_E) {
+					enter = true;
+					if (stairLocationZ.contains(player.getX())) {
+						if (stairLocationX.contains(player.getY())) {
+							if (stairs.get(stairLocationZ.indexOf(player.getX()))) {
+								TerrainGen.changeLevel(60, 30, true);
+								System.out.println(TerrainGen.getCurrentLevel());
+							} else if (!stairs.get(stairLocationZ
+									.indexOf(player.getX()))) {
+								TerrainGen.changeLevel(60, 30, false);
+								System.out.println(TerrainGen.getCurrentLevel());
+							}
+						}
+					}
