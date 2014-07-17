@@ -2,35 +2,73 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 
 public class Thing {
 	private int x;
 	private int y;
+
+	// for collisions
 	private boolean solid;
+
+	// remembers if it was ever revealed so fog works
+	private boolean wasRevealed = false;
+
 	private BufferedImage icon;
+	private BufferedImage fog;
 	private boolean revealed;
+
+	// dep = dependent
+	// coords of the tile that must be clear to be revealed
+	private int depX = 0;
+	private int depY = 0;
+
+	// used because we don't have classes for everything
+	// so I can't use "instanceof"
+	private String type;
 
 	public Thing() {
 		this(0, 0, false, true, "placeHolder.png");
 	}
 
+	// targetImage is a String for the name of the file it should use
 	public Thing(int x, int y, boolean solid, boolean revealed,
 			String targetImage) {
 		this.x = x;
 		this.y = y;
 		this.solid = solid;
 		this.revealed = revealed;
+		if (targetImage.contains("wall")) {
+			this.type = "wall";
+		}
+		if (targetImage.contains("tile")) {
+			this.type = "tile";
+		}
+
 		try {
+
+			// imports fog image and image for that thing
 			icon = ImageIO.read(new File(targetImage));
+			// chooses between the two fogs
+			// just for slightly differed fog
+			fog = ImageIO.read(new File("fog"
+					+ ((int) (Math.random() * (2)) + 1) + ".png"));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void draw(Graphics g) {
-		if (revealed)
+		if (revealed) {
 			g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+		} else if (wasRevealed) {
+			// only draws the fog on it if it isn't currently revealed
+			// but was once
+			g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+			g.drawImage(fog, x * 16, y * 16, 16, 16, null);
+		}
 	}
 
 	public int getX() {
@@ -74,7 +112,66 @@ public class Thing {
 	}
 
 	public void setRevealed(boolean revealed) {
+		// remembers if it was revealed
+		if (revealed)
+			wasRevealed = true;
 		this.revealed = revealed;
+	}
+
+	// figures out which other tile it is dependent on
+	public void setDep(int pX, int pY) {
+		// difference in x and y
+		int diffX = pX - x;
+		int diffY = pY - y;
+
+		// if horizontal
+		if (diffX == 0) {
+			depX = x;
+			depY = y + (diffY / Math.abs(diffY));
+			// if vertical
+		} else if (diffY == 0) {
+			depX = x + (diffX / Math.abs(diffX));
+			depY = y;
+
+		} else {
+			// if the difference in the differences is less than 4
+			if (Math.abs(Math.abs(diffX) - Math.abs(diffY)) <= 3) {
+				// dependent of diagonal
+				depX = x + (diffX / Math.abs(diffX));
+				depY = y + (diffY / Math.abs(diffY));
+			} else {
+				if (Math.abs(diffX) > Math.abs(diffY)) {
+					// dependent on horizontal tile towards player
+					depX = x + (diffX / Math.abs(diffX));
+					depY = y;
+				} else {
+					// " " but vertical
+					depX = x;
+					depY = y + (diffY / Math.abs(diffY));
+				}
+			}
+		}
+
+	}
+
+	public int getDepX() {
+		return depX;
+	}
+
+	public int getDepY() {
+		return depY;
+	}
+
+	public void setDepX(int depX) {
+		this.depX = depX;
+	}
+
+	public void setDepY(int depY) {
+		this.depY = depY;
+	}
+
+	public String getType() {
+		return type;
 	}
 
 }
