@@ -1,0 +1,36 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class Reader {
+	public static ArrayList<String> prefixList = new ArrayList<>();
+	public static ArrayList<String> suffixList = new ArrayList<>();
+	public static ArrayList<String> wordList = new ArrayList<>();
+	public static void Readers() throws IOException {
+		BufferedReader prefix = new BufferedReader(new FileReader("prefix.txt"));
+		BufferedReader suffix = new BufferedReader(new FileReader("suffix.txt"));
+		BufferedReader word = new BufferedReader(new FileReader("word.txt"));
+		String prefixContent = null;
+		String suffixContent = null;
+		String wordContent = null;
+		while ((prefixContent = prefix.readLine()) != null) {
+			String[] partsPrefix = prefixContent.split("\\s");
+			for (String part : partsPrefix) {
+				prefixList.add(part);
+			}
+		}
+		while ((suffixContent = suffix.readLine()) != null) {
+			String[] partsSuffix = suffixContent.split("\\s");
+			for (String parts : partsSuffix) {
+				prefixList.add(parts);
+			}
+		}
+		while ((wordContent = word.readLine()) != null) {
+			String[] partsWord = wordContent.split("\\s");
+			for (String partses : partsWord) {
+				prefixList.add(partses);
+			}
+		}
+	}
+}
