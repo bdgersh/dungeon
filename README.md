@@ -24,7 +24,8 @@ ToDo Lizt==
         -zkill tree?    
 -Ranged Combat  
 -Magic  
--Zoundz 
+Finished:
+Zoundz 
 
 pics:
 http://imgur.com/a/M8FEZ#0
