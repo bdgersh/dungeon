@@ -3,116 +3,41 @@ import java.util.Iterator;
 
 public class TerrainGen {
 	boolean intersect;
-	int[][] map = new int[60][30];
+	private ArrayList<Thing[][]> map = new ArrayList<Thing[][]>();
+	int[][] level = new int[60][30];
 	ArrayList<Rect> rooms = new ArrayList();
 	ArrayList<Hallway> halls = new ArrayList();
+	ArrayList<Stairs> upStairs = new ArrayList();
+	ArrayList<Stairs> downStairs = new ArrayList();
+	int currentLevel = 0;
 
-	public TerrainGen(int num) {
-		rooms.add(new Rect());
-		boolean possible = true;
-		boolean restart;
-
-		for (int q = 1; q < num; q++) {
-
-			restart = true;
-			Rect hold = null;
-			while (restart) {
-				hold = new Rect();
-				hold.random();
-				restart = false;
-				for (Rect r : rooms) {
-					if (r.intersect(hold)) {
-						restart = true;
-
-					}
-
-				}
-			}
-			rooms.add(hold);
+	public TerrainGen() {
+		for (int f = 0; f < 20; f++) {
+			currentLevel = f;
+			map.add(genLevel());
 		}
-
-		int lowX = 0;
-		int lowY = 0;
-		for (Rect r : rooms) {
-			if (r.x < lowX)
-				lowX = r.x;
-			if (r.y < lowY)
-				lowY = r.y;
+		for (int f = 0; f < 19; f++) {
+			upStairs.get(f).setRefX(downStairs.get(f).getX());
+			upStairs.get(f).setRefY(downStairs.get(f).getY());
+			downStairs.get(f).setRefX(upStairs.get(f).getX());
+			downStairs.get(f).setRefY(upStairs.get(f).getY());
+			map.get(upStairs.get(f).getLevel())[upStairs.get(f).getX()][upStairs.get(f).getY()]= upStairs.get(f);
+			map.get(downStairs.get(f).getLevel())[downStairs.get(f).getX()][downStairs.get(f).getY()]= downStairs.get(f);
 		}
-		for (Rect r : rooms) {
-			r.x = r.x + (Math.abs(lowX));
-			r.y = r.y + (Math.abs(lowY));
-		}
-		System.out.println(rooms.get(0).x);
-
-		System.out.println(rooms.get(0).y);
-		for (Rect r : rooms) {
-			for (int q = r.x; q < r.x + r.length - 1; q++) {
-				for (int w = r.y; w < r.y + r.height - 1; w++) {
-					map[q][w] = 1;
-				}
-			}
-
-			for (int q = r.x + 1; q < r.x + r.length - 1; q++) {
-				for (int w = r.y + 1; w < r.y + r.height - 1; w++) {
-					map[q][w] = 0;
-				}
-			}
-		}
-
-		Iterator<Rect> it = rooms.iterator();
-		map = new int[60][30];
-		while (it.hasNext()) {
-			Rect r = it.next();
-			if (r.area < 15) {
-				it.remove();
-			}
-		}
-		System.out.println(rooms.size());
-
-		for (Rect r : rooms) {
-			for (int q = r.x; q < r.x + r.length; q++) {
-				for (int w = r.y; w < r.y + r.height; w++) {
-					map[q][w] = 1;
-				}
-			}
-
-		}
-		for (Rect r : rooms) {
-			Hallway n = new Hallway(r, closest(r));
-			halls.add(n);
-		}
-		for (int i = 0; i < 3; i++) {
-			Hallway n = new Hallway(rooms.get(i), furthest(rooms.get(i)));
-			halls.add(n);
-		}
-
-		for (Hallway h : halls) {
-			if (Math.random() <= 1) {
-				if (h.startX < h.endX)
-					for (int x = h.startX; x < h.endX; x++) {
-						map[x][h.startY] = 2;
-					}
-				if (h.startX > h.endX)
-					for (int x = h.startX; x > h.endX; x--) {
-						map[x][h.startY] = 2;
-					}
-				if (h.startY < h.endY)
-					for (int y = h.startY; y < h.endY; y++) {
-						map[h.endX][y] = 2;
-					}
-				if (h.startY > h.endY)
-					for (int y = h.startY; y > h.endY; y--) {
-						map[h.endX][y] = 2;
-					}
-
-			} else {
-
-			}
-		}
-
+//		int holdLevel;
+//		int holdX;
+//		int holdY;
+//		for (int i = 0; i < 100; i++) {
+//			holdLevel = (int) (Math.random() * 20);
+//			holdX = (int) (Math.random() * 60);
+//			holdY = (int) (Math.random() * 30);
+//			if(map.get(holdLevel)[holdX][holdY].getType().equals("tile")){
+//				map.get(holdLevel)[holdX][holdY]=new Chest(holdX,holdY,false,false,"placeHolder.png",holdLevel);
+//			}
+//		}
 	}
 
+	// returns closest Rect
 	public Rect closest(Rect r) {
 		Rect close = rooms.get(0);
 		double dclose = 1000;
@@ -135,6 +60,7 @@ public class TerrainGen {
 
 	}
 
+	// returns furthest
 	public Rect furthest(Rect r) {
 		Rect close = rooms.get(0);
 		double dclose = 0;
@@ -155,6 +81,147 @@ public class TerrainGen {
 		}
 		return close;
 
+	}
+
+	public Thing[][] genLevel() {
+
+		level = new int[60][30];
+		rooms = new ArrayList();
+		halls = new ArrayList();
+		rooms.add(new Rect());
+		boolean possible = true;
+		boolean restart = true;
+		Rect hold = new Rect();
+		// makes a number of rooms = num
+		for (int q = 0; q < 50; q++) {
+			restart = true;
+			// finds a Rect that doesn't overlap any others
+			while (restart) {
+				restart = false;
+				hold = new Rect();
+				for (Rect r : rooms) {
+					if (r.intersect(hold)) {
+						restart = true;
+					}
+				}
+			}
+			// adds it to the list
+			rooms.add(hold);
+			// does that whole thing 'num' times
+		}
+
+		Iterator<Rect> it = rooms.iterator();
+
+		while (it.hasNext()) {
+			Rect r = it.next();
+			if (r.area < 15 || r.getHeight() < 3 || r.getLength() < 3) {
+				it.remove();
+
+			}
+		}
+		// saves all the rooms as 1's and 0's in the 2Darray that is passed back
+		// 1 is a tile, 0 is a wall
+		// this works and I don't know why
+		for (Rect r : rooms) {
+			for (int q = r.x; q < r.x + r.length - 1; q++) {
+				for (int w = r.y; w < r.y + r.height - 1; w++) {
+					level[q][w] = 1;
+				}
+			}
+
+			for (int q = r.x + 1; q < r.x + r.length - 1; q++) {
+				for (int w = r.y + 1; w < r.y + r.height - 1; w++) {
+					level[q][w] = 0;
+				}
+			}
+		}
+		for (Rect r : rooms) {
+			for (int q = r.x; q < r.x + r.length; q++) {
+				for (int w = r.y; w < r.y + r.height; w++) {
+					level[q][w] = 1;
+				}
+			}
+		}
+		System.out.println("Loading..." + rooms.size());
+		for (Rect r : rooms) {
+			Hallway n = new Hallway(r, closest(r));
+			halls.add(n);
+		}
+		for (int i = 0; i < 3 && i < rooms.size(); i++) {
+			Hallway n = new Hallway(rooms.get(i), furthest(rooms.get(i)));
+			halls.add(n);
+		}
+
+		for (Hallway h : halls) {
+
+			if (h.startX < h.endX)
+				for (int x = h.startX; x < h.endX; x++) {
+					level[x][h.startY] = 2;
+				}
+			if (h.startX > h.endX)
+				for (int x = h.startX; x > h.endX; x--) {
+					level[x][h.startY] = 2;
+				}
+			if (h.startY < h.endY)
+				for (int y = h.startY; y < h.endY; y++) {
+					level[h.endX][y] = 2;
+				}
+			if (h.startY > h.endY)
+				for (int y = h.startY; y > h.endY; y--) {
+					level[h.endX][y] = 2;
+				}
+
+		}
+
+		Thing[][] holdLevel = new Thing[60][30];
+		for (int z = 0; z < 60; z++) {
+			for (int x = 0; x < 30; x++) {
+				if (level[z][x] == 0) {
+					holdLevel[z][x] = new Thing(z, x, true, false, "wall"
+							+ ((int) (Math.random() * (4)) + 1) + ".png");
+				} else {
+					holdLevel[z][x] = new Thing(z, x, false, false, "tile.png");
+				}
+			}
+
+		}
+		if (currentLevel != 19) {
+			restart = true;
+			while (restart) {// make downstair
+				restart = false;
+				int holdX = (int) (Math.random() * 60);
+				int holdY = (int) (Math.random() * 30);
+				if (holdLevel[holdX][holdY].getType().equals("tile")) {
+					holdLevel[holdX][holdY] = new Stairs(holdX, holdY, false,
+							false, "downStair.png", false,currentLevel);
+					downStairs.add(new Stairs(holdX, holdY, false, false,
+							"downStair.png", false,currentLevel));
+				} else {
+					restart = true;
+				}
+			}
+		}
+		if (currentLevel != 0) {
+			restart = true;
+			while (restart) {// make upstair
+				restart = false;
+				int holdX = (int) (Math.random() * 60);
+				int holdY = (int) (Math.random() * 30);
+				if (holdLevel[holdX][holdY].getType().equals("tile")) {
+					holdLevel[holdX][holdY] = new Stairs(holdX, holdY, false,
+							false, "upStair.png", true,currentLevel);
+					upStairs.add(new Stairs(holdX, holdY, false, false,
+							"upStair.png", true,currentLevel));
+				} else {
+					restart = true;
+				}
+			}
+		}
+		return holdLevel;
+	}
+
+	public ArrayList getMap() {
+		return map;
 	}
 
 }
