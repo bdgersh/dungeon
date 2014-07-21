@@ -1,0 +1,27 @@
+import java.io.*;
+import java.util.Scanner;
+
+import javax.sound.sampled.*;
+
+public class Sound {
+	public static void Sound(String soundFile) {
+		  try
+		    {
+		        Clip clip = AudioSystem.getClip();
+		        clip.open(AudioSystem.getAudioInputStream(new File(soundFile)));
+		        clip.start();
+		    }
+		    catch (Exception exc)
+		    {
+		        exc.printStackTrace(System.out);
+		    }
+	}public static void chooser(){
+		Scanner scan = new Scanner(System.in); 
+		String[] songs = new String[]{};
+		for(int i = 0; i < songs.length; i++){
+			System.out.println(i + ") " + songs[i]);
+		}
+		int num = scan.nextInt();
+		Sound(songs[num]);
+	}
+}
