@@ -146,7 +146,17 @@ public class Window extends JFrame {
 							}
 						}
 					}
-			}
+			}else if (e.getKeyCode() == KeyEvent.VK_B) {
+					if (items.size() <= 20) {
+						try {
+							items.add(new Item((int) Math.random() * 100, 0));
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}else System.out.println("NOPE!");
+					updatePhysics();
+					repaint();
+				}
 }
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -258,6 +268,22 @@ public class Window extends JFrame {
 			}
 		}
 		// to account for stupid error because comp is slow
+		int y = 0;
+		for (int i = 0; i < 20; i++) {
+			if (i < 5)
+				y = 0;
+			else if (i < 10)
+				y = 57;
+			else if (i < 15)
+				y = 114;
+			else if (i < 20)
+				y = 173;
+			
+			if (items.size() > i) {
+				gi.drawImage(items.get(i).getIcon(), ((i % 5) - 1) * 60 + 1030,
+						y + 248, 45, 45, null);
+			}
+		}
 		if (player != null)
 			player.draw(gi);
 
