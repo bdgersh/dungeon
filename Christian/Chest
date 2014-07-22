@@ -1,0 +1,18 @@
+
+public class Chest extends Thing{
+	
+	int level;// needs ArrayList of items
+	public Chest(int x, int y, boolean solid, boolean revealed,
+			String targetImage,int level){
+		super(x,y,solid,revealed,targetImage);
+		this.level = level;
+		this.type = "chest";
+	}
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	
+}
