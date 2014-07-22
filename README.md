@@ -4,7 +4,7 @@ dungeon
 2D Dungeon Crawler
 
 ToDo Lizt==    
--Ztairz/Level infraztructure    
+-Ztairz/Level infraztructure //done   
 -Inventory dizplay    
 -Itemz, dropz, currency    
         -Enemiez dropping itemz/ randomly generated cheztz      
@@ -13,7 +13,7 @@ ToDo Lizt==
              -Green    
              -Blue     
              -Purple      
-                -Orange    
+             -Orange    
 -Enemiez/combat
 
 -Leveling zyztem    
