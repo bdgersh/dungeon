@@ -1,0 +1,56 @@
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+public class Weapon extends Thing {
+	double damage;
+	String name;
+	int wLevel;
+
+	public Weapon(int x, int y, BufferedImage icon, BufferedImage foga,
+			int rarity, int itemType, int level) throws IOException {
+		super(x, y, false, icon, foga);
+		
+		if (rarity <= 50) {
+			//name = Reader2.getName(itemType, 0);
+			damage = Math.random() * 7;
+		} else if (rarity > 50 && rarity <= 80) {
+			//name = Reader2.getName(itemType, (int) Math.random() + 1);
+			damage = Math.random() * 13 + 7;
+
+		} else if (rarity > 80) {
+			//name = Reader2.getName(itemType, 1337);
+			damage = Math.random() * 18 + 13;
+		}
+		setIcon();
+		
+	}
+	public void setLevel(){
+		wLevel = TerrainGen.currentLevel;
+	}
+	public int getLevel(){
+		return wLevel;
+	}
+	public void setIcon(){
+		icon = Window.sword;
+	}
+	public int getX(){
+		return x;
+	}
+	public int getY(){
+		return y;
+	}
+	 public void draw(Graphics g) {
+	        if (revealed) {
+	            g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+	        } else if (wasRevealed) {
+	            // only draws the fog on it if it isn't currently revealed
+	            // but was once
+	            g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+	            g.drawImage(fog, x * 16, y * 16, 16, 16, null);
+	        }else{
+	        	 g.drawImage(icon, x * 16, y * 16, 16, 16, null);
+	        }
+	}
+	}
+
